@@ -1,14 +1,14 @@
 import { Routes } from '@angular/router';
-import { ListOrdersComponent } from './list-orders/list-orders.component';
+import { ListBorrowingComponent } from './list-orders/list-borrowing.component';
 
 export const routes: Routes = [
   {
-    path: 'pedidos',
-    component: ListOrdersComponent
+    path: 'lista',
+    component: ListBorrowingComponent
   },
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'pedidos'
+    redirectTo: 'lista'
   }
 ];
