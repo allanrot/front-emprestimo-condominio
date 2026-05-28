@@ -1,14 +1,19 @@
 import { Routes } from '@angular/router';
-import { ListBorrowingComponent } from './list-orders/list-borrowing.component';
+import { AvailableItemsListViewComponent } from './available-items-list-view/available-items-list-view.component';
+import { WelcomeViewComponent } from './welcome-view/welcome-view.component';
 
 export const routes: Routes = [
   {
+    path: 'inicial',
+    component: WelcomeViewComponent
+  },
+  {
     path: 'lista',
-    component: ListBorrowingComponent
+    component: AvailableItemsListViewComponent
   },
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'lista'
+    redirectTo: 'inicial'
   }
 ];
