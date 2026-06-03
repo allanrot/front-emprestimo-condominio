@@ -19,6 +19,7 @@
     "@angular/router": "^19.2.0",
     "@tailwindcss/postcss": "^4.3.0",
     "daisyui": "^5.5.20",
+    "ngx-mask": "^19.0.7",
     "postcss": "^8.5.15",
     "rxjs": "~7.8.0",
     "tailwindcss": "^4.3.0",
