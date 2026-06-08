@@ -6,7 +6,7 @@ export const authInterceptor: HttpInterceptorFn = (
 ) => {
 
   const token =
-    localStorage.getItem('token');
+    localStorage.getItem('condo-share-token');
 
   if (!token) {
     return next(req);

@@ -37,3 +37,7 @@
 @plugin "daisyui" {
   themes: forest --default;
 }
+
+@utility page-title {
+  @apply text-primary text-4xl font-bold mb-8;
+}

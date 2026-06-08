@@ -1,10 +1,16 @@
 import { Component, inject } from "@angular/core";
-import { TestApiService } from "../../api/test-api-service";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import { AuthApiService } from "../../api/auth-api-service";
+import { Router } from "@angular/router";
+import { finalize } from "rxjs";
+import { AlertService } from "../../services/alert-service";
+import { User } from "../../models/user";
+import { AuthService } from "../../services/auth-service";
 
 @Component({
   template: `
-    <main class="flex flex-col items-center gap-4 justify-center" [formGroup]="form">
+    <div class="flex flex-col items-center gap-4 justify-center" [formGroup]="form">
+      <h1 class="page-title">Login</h1>
       <label class="input validator">
         <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <g
@@ -39,30 +45,55 @@ import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
         <input
           type="password"
           placeholder="senha"
-          formControlName="senha"
+          formControlName="password"
         />
       </label>
 
-      <button class="btn btn-primary mt-4" (click)="login()" [disabled]="form.invalid">Login</button>
-    </main>
+      @if (!authenticating) {
+        <button class="btn btn-primary mt-4" (click)="login()" [disabled]="form.invalid">Login</button>
+      }
+      @else {
+        <button class="btn btn-outline btn-primary mt-4">
+          <span class="loading loading-spinner"></span>
+          Autenticando...
+        </button>
+      }
+      <p class="text-xs">Não possui uma conta? <a class="link link-primary" (click)="register()">Registrar</a></p>
+    </div>
   `,
   imports: [ReactiveFormsModule],
-  providers: [TestApiService]
+  providers: [AuthApiService]
 })
 export class LoginFormComponent {
+  private alertService = inject(AlertService);
+  protected readonly route = inject(Router);
   protected readonly formBuilder = inject(FormBuilder);
-  protected readonly api = inject(TestApiService);
+  protected readonly api = inject(AuthApiService);
+  protected readonly authService = inject(AuthService);
   protected readonly form = this.formBuilder.group({
     email: ['', [Validators.required]],
-    senha: ['', [Validators.required]]
+    password: ['', [Validators.required]]
   });
+  authenticating: boolean = false;
 
   login(): void {
-    this.api.login(this.form.value).subscribe((dadosLogin) => {
-      localStorage.setItem(
-        'token',
-        dadosLogin.token
-      );
+    this.authenticating = true;
+    this.api.login(this.form.value as Partial<User>).pipe(finalize(() => this.authenticating = false)).subscribe({
+      next: (dadosLogin) => {
+        this.authService.setLoggedUser(dadosLogin);
+        localStorage.setItem(
+          'condo-share-token',
+          dadosLogin.token
+        );
+        this.route.navigate(['/dashboard']);
+      },
+      error: (mensagem: string) => {
+        this.alertService.showAlert(mensagem, 'error');
+      }
     });
+  }
+
+  register(): void {
+    void this.route.navigate(['/registrar']);
   }
 }

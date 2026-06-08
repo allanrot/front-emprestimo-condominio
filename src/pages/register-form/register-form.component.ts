@@ -1,21 +1,25 @@
 import { Component, inject } from "@angular/core";
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NgxMaskDirective } from "ngx-mask";
-import { TestApiService } from "../../api/test-api-service";
+import { AlertService } from "../../services/alert-service";
+import { Router } from "@angular/router";
+import { finalize } from "rxjs";
+import { AuthApiService } from "../../api/auth-api-service";
 
 @Component({
   template: `
-    <form class="flex flex-col items-center" [formGroup]="form">
+    <form class="flex flex-col items-center gap-2" [formGroup]="form">
+      <h1 class="page-title">Registrar</h1>
       <fieldset class="fieldset">
-        <legend class="fieldset-legend">Nome</legend>
-        <input type="text" class="input w-75 input-secondary" placeholder="Fulano de tal" formControlName="nome" />
+        <legend class="fieldset-legend">Nome*</legend>
+        <input type="text" class="input w-75 input-secondary" placeholder="Fulano de tal" formControlName="name" />
       </fieldset>
       <fieldset class="fieldset">
-        <legend class="fieldset-legend">Apartamento</legend>
-        <input type="number" class="input w-75 input-secondary" placeholder="101" formControlName="apartamento" />
+        <legend class="fieldset-legend">Apartamento*</legend>
+        <input type="number" class="input w-75 input-secondary" placeholder="101" formControlName="apartment" />
       </fieldset>
       <fieldset class="fieldset">
-        <legend class="fieldset-legend">Número de telefone (Whatsapp)</legend>
+        <legend class="fieldset-legend">Número de telefone (Whatsapp)*</legend>
         <label class="input validator w-75 input-secondary">
           <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
             <g fill="none">
@@ -37,12 +41,12 @@ import { TestApiService } from "../../api/test-api-service";
             required
             placeholder="(00) 00000-0000"
             mask="(00) 00000-0000"
-            formControlName="telefone"
+            formControlName="phone"
           />
         </label>
       </fieldset>
       <fieldset class="fieldset">
-        <legend class="fieldset-legend">E-mail</legend>
+        <legend class="fieldset-legend">E-mail*</legend>
         <label class="input validator input-primary w-75">
           <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <g
@@ -61,7 +65,7 @@ import { TestApiService } from "../../api/test-api-service";
         </label>
       </fieldset>
       <fieldset class="fieldset">
-        <legend class="fieldset-legend">Senha</legend>
+        <legend class="fieldset-legend">Senha*</legend>
         <label class="input validator input-primary w-75">
           <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <g
@@ -80,29 +84,52 @@ import { TestApiService } from "../../api/test-api-service";
           <input
             type="password"
             placeholder="senha"
-            formControlName="senha"
+            formControlName="password"
           />
         </label>
       </fieldset>
 
-      <button class="btn btn-primary mt-6" (click)="register()" [disabled]="form.invalid">Registrar</button>
+      @if (!registering) {
+        <button class="btn btn-primary mt-6" (click)="register()" [disabled]="form.invalid">Registrar</button>
+      }
+      @else {
+        <button class="btn btn-outline btn-primary mt-6">
+          <span class="loading loading-spinner"></span>
+          Registrando...
+        </button>
+      }
     </form>
   `,
   imports: [ReactiveFormsModule, NgxMaskDirective],
-  providers: [TestApiService]
+  providers: [AuthApiService]
 })
 export class RegisterFormComponent {
+  private alertService = inject(AlertService);
   protected readonly formBuilder = inject(FormBuilder);
-  protected readonly api = inject(TestApiService);
+  protected readonly api = inject(AuthApiService);
+  protected readonly route = inject(Router);
   protected readonly form = this.formBuilder.group({
-    nome: ['', [Validators.required]],
-    apartamento: ['', [Validators.required]],
-    telefone: ['', [Validators.required]],
+    name: ['', [Validators.required]],
+    apartment: ['', [Validators.required]],
+    phone: ['', [Validators.required]],
     email: ['', [Validators.required]],
-    senha: ['', [Validators.required]]
+    password: ['', [Validators.required]]
   });
+  registering: boolean = false;
 
   register(): void {
-    this.api.register({ ...this.form.value, telefone: this.form.value.telefone?.replace(/\D/g, '') }).subscribe();
+    this.registering = true;
+    this.api
+      .register({ ...this.form.value, phone: this.form.value.phone?.replace(/\D/g, '') })
+      .pipe(finalize(() => this.registering = false))
+      .subscribe({
+        next: () => {
+          this.alertService.showAlert('Usuário cadastrado com sucesso', 'success');
+          this.route.navigate(['/login']);
+        },
+        error: () => {
+          this.alertService.showAlert('Erro ao cadastrar usuário', 'error');
+        }
+      });
   }
 }

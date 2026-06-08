@@ -1,11 +1,13 @@
 export class Login {
-  nome: string;
+  name: string;
   token: string;
-  usuarioId: string;
+  userId: string;
+  apartment: string;
 
   constructor(login: Login) {
-    this.nome = login.nome;
+    this.name = login.name;
     this.token = login.token;
-    this.usuarioId = login.usuarioId;
+    this.userId = login.userId;
+    this.apartment = login.apartment;
   }
 }

@@ -1,8 +1,21 @@
-<header class="flex justify-center">
-  <img src="/condosharelogo.drawio.png" alt="">
+<header class="flex justify-center px-6">
+  <img src="/condosharelogo.drawio.png">
 </header>
 <main class="flex justify-center items-center h-100 gap-2">
-  <button class="btn btn-neutral" (click)="disponibilizar()">Disponibilizar item</button>
-  <button class="btn btn-primary" (click)="procurar()">Procurar item</button>
-  <button class="btn btn-secondary" (click)="login()">Login</button>
+  <button class="btn btn-primary" (click)="activeToken ? search() : authModal.showModal()">Procurar item</button>
+  <button class="btn btn-neutral" (click)="activeToken ? dashboard() : authModal.showModal()">Disponibilizar
+    item</button>
+  <dialog #authModal class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+      <h3 class="text-lg font-bold">Já possui cadastro?</h3>
+      <p class="py-4">Para buscar ou disponibilizar um item, é necessário possuir um cadastro.</p>
+      <div class="modal-action">
+        <button class="btn btn-primary" (click)="register()">Registrar</button>
+        <button class="btn btn-secondary" (click)="login()">Login</button>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 </main>

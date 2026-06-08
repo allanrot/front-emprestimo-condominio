@@ -8,13 +8,26 @@ import { Router } from "@angular/router";
 })
 export class WelcomeViewComponent {
   private route = inject(Router);
+  activeToken: boolean = false;
 
-  disponibilizar(): void {
-    void this.route.navigate(['/registrar']);
+  ngOnInit(): void {
+    this.searchToken();
   }
 
-  procurar(): void {
+  searchToken(): void {
+    this.activeToken = !!localStorage.getItem('condo-share-token');
+  }
+
+  search(): void {
     void this.route.navigate(['/lista']);
+  }
+
+  dashboard(): void {
+    void this.route.navigate(['/dashboard']);
+  }
+
+  register(): void {
+    void this.route.navigate(['/registrar']);
   }
 
   login(): void {

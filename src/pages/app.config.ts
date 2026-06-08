@@ -4,6 +4,7 @@ import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
 import { authInterceptor } from '../interceptors/auth-interceptor';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,5 +14,7 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([
         authInterceptor
       ])
-    ), provideEnvironmentNgxMask()]
+    ),
+    provideEnvironmentNgxMask(),
+    provideAnimations()]
 };
