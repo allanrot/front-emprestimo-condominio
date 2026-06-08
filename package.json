@@ -44,5 +44,14 @@
   "optionalDependencies": {
     "@esbuild/linux-x64": "0.25.0",
     "lightningcss-linux-x64-gnu": "^1.32.0"
+  },
+  "supportedArchitectures": {
+    "os": [
+      "win32",
+      "linux"
+    ],
+    "cpu": [
+      "x64"
+    ]
   }
 }
