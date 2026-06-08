@@ -1,4 +1,4 @@
-import { Component, inject } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { AuthApiService } from "../../api/auth-api-service";
 import { Router } from "@angular/router";
@@ -64,7 +64,7 @@ import { AuthService } from "../../services/auth-service";
   imports: [ReactiveFormsModule],
   providers: [AuthApiService]
 })
-export class LoginFormComponent {
+export class LoginFormComponent implements OnInit {
   private alertService = inject(AlertService);
   protected readonly route = inject(Router);
   protected readonly formBuilder = inject(FormBuilder);
@@ -75,6 +75,10 @@ export class LoginFormComponent {
     password: ['', [Validators.required]]
   });
   authenticating: boolean = false;
+
+  ngOnInit(): void {
+    this.form.markAsTouched();
+  }
 
   login(): void {
     this.authenticating = true;

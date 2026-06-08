@@ -1,0 +1,58 @@
+<nav class="bg-neutral text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <div class="flex-shrink-0">
+        <span class="text-xl font-bold cursor-pointer" (click)="navigateHome()">CondoShare</span>
+      </div>
+      <div class="hidden xl:flex space-x-4">
+        <button class="hover:bg-primary px-3 py-2 rounded-md text-sm font-medium cursor-pointer"
+          (click)="navigateHome()">
+          Início
+        </button>
+        <button class="cursor-pointer hover:bg-primary px-3 py-2 rounded-md text-sm font-medium"
+          (click)="navigateItems()">
+          Itens disponíveis
+        </button>
+        <button class="cursor-pointer hover:bg-primary px-3 py-2 rounded-md text-sm font-medium"
+          (click)="navigateDashboard()">
+          Meus itens
+        </button>
+        <button class="cursor-pointer hover:bg-primary px-3 py-2 rounded-md text-sm font-medium"
+          (click)="isUserLogged ? logout() : navigateLogin()">
+          {{ isUserLogged ? 'Logout' : 'Login' }}
+        </button>
+      </div>
+      <div class="flex xl:hidden">
+        <button (click)="toggleMenu()" type="button"
+          class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-primary focus:outline-none">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path *ngIf="!isMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16" />
+            <path *ngIf="isMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="isMenuOpen" @slideInOut class="xl:hidden bg-primary overflow-hidden">
+    <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+      <button class="cursor-pointer block hover:bg-primary px-3 py-2 rounded-md text-base font-medium"
+        (click)="navigateHome()">
+        Início
+      </button>
+      <button class="cursor-pointer block hover:bg-primary px-3 py-2 rounded-md text-base font-medium"
+        (click)="navigateItems()">
+        Itens disponíveis
+      </button>
+      <button class="cursor-pointer block hover:bg-primary px-3 py-2 rounded-md text-base font-medium"
+        (click)="navigateDashboard()">
+        Meus itens
+      </button>
+      <button class="cursor-pointer block hover:bg-primary px-3 py-2 rounded-md text-base font-medium"
+        (click)="isUserLogged ? logout() : navigateLogin()">
+        {{ isUserLogged ? 'Logout' : 'Login' }}
+      </button>
+    </div>
+  </div>
+</nav>

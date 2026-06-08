@@ -2,11 +2,25 @@
   <app-loading-component [loading]="searching" />
   @if (!searching) {
   <h1 class="page-title">Itens disponíveis</h1>
-  <div class="flex flex-col items-center justify-center gap-8">
-    @for(item of items; track item._id) {
-    <div class="card bg-neutral text-neutral-content w-96">
+  <label class="input mb-4">
+    <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.3-4.3"></path>
+      </g>
+    </svg>
+    <input type="search" required placeholder="Buscar" [value]="searchTerm()"
+      (input)="searchTerm.set($any($event.target).value)" />
+  </label>
+  <div class="flex flex-col xl:grid xl:grid-cols-3 justify-center gap-8">
+    @for(item of filteredItems(); track item._id) {
+    <div class="card bg-neutral text-neutral-content w-96 h-full flex flex-col justify-between mx-auto">
       @if (item.userId === this.loggedUser?.userId) {
-      <span class="badge badge-sm badge-warning"><b>Meu item</b></span>
+      <div class="flex gap-2">
+        <span class="badge badge-sm badge-warning"><b>Meu item</b></span>
+        <span [class]="item.available ? 'badge badge-sm badge-success' : 'badge badge-sm badge-error'"><b>{{
+            item.available ? 'Disponível' : 'Indisponível' }}</b></span>
+      </div>
       }
       <div class="card-body items-center text-center">
         <h2 class="card-title"><b>Item: </b>{{ item.name }}</h2>
@@ -30,22 +44,42 @@
             }
             <dialog #modal_item class="modal">
               <div class="modal-box">
-                <h3 class="text-lg font-bold">Item: {{ item.name }}</h3>
+                <h3 class="text-lg font-bold">Item: {{ selectedItem?.name }}</h3>
                 <p class="py-4">Deseja entrar em contato com o dono do item?</p>
                 <div class="modal-action">
-                  <button class="btn btn-success" (click)="contactOwner(item)">Sim</button>
+                  <button class="btn btn-success" (click)="contactOwner()">Sim</button>
                   <form method="dialog">
-                    <button class="btn btn-outline" (click)="(itemOwner = null)">Não</button>
+                    <button class="btn btn-outline" (click)="closeModalItem()">Não</button>
                   </form>
                 </div>
               </div>
               <form method="dialog" class="modal-backdrop">
-                <button (click)="(itemOwner = null)">close</button>
+                <button (click)="closeModalItem()">close</button>
               </form>
             </dialog>
             }
             @else {
             <button class="btn btn-warning" (click)="update(item._id)">Editar</button>
+            <button [class]="item.available ? 'btn btn-outline btn-warning' : 'btn btn-outline btn-success'"
+              (click)="modal_available.showModal()">
+              Marcar como {{ item.available ? 'indisponível' : 'disponível' }}
+            </button>
+            <dialog #modal_available class="modal">
+              <div class="modal-box">
+                <h3 class="text-lg font-bold">Marcar como {{ item.available ? 'indisponível' : 'disponível' }}?</h3>
+                <p class="py-4">Deseja confirmar essa ação?</p>
+                <div class="modal-action">
+                  <button class="btn btn-primary"
+                    (click)="changeAvailability(item._id, !item.available)">Confirmar</button>
+                  <form method="dialog">
+                    <button class="btn btn-error">Cancelar</button>
+                  </form>
+                </div>
+              </div>
+              <form method="dialog" class="modal-backdrop">
+                <button>close</button>
+              </form>
+            </dialog>
             }
           </div>
         </div>

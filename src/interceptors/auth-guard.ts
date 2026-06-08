@@ -1,25 +1,16 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { jwtDecode } from 'jwt-decode';
+import { AuthService } from '../services/auth-service';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
-  const token = localStorage.getItem('condo-share-token');
+  const authService = inject(AuthService);
 
-  if (token) {
-    try {
-      const decoded: any = jwtDecode(token);
-      const currentTime = Math.floor(Date.now() / 1000);
-
-      if (decoded.exp && decoded.exp > currentTime) {
-        return true;
-      }
-    } catch (error) {
-      console.error('Token inválido ou corrompido', error);
-    }
+  if (authService.validateToken()) {
+    return true;
   }
 
-  localStorage.removeItem('condo-share-token');
-  router.navigate(['/login']);
+  authService.logout();
+  void router.navigate(['/login']);
   return false;
 };

@@ -1,4 +1,4 @@
-import { Component, inject } from "@angular/core";
+import { Component, computed, inject, signal } from "@angular/core";
 import { ItemsApiService } from "../../api/items-api-service";
 import { Router } from "@angular/router";
 import { Item } from "../../models/item";
@@ -12,10 +12,24 @@ import { LoadingComponent } from "../../components/loading/loading.component";
       <h1 class="page-title">Meus itens cadastrados</h1>
       <button class="btn btn-primary mb-8" (click)="register()">Cadastrar novo item</button>
       <app-loading-component [loading]="searching"/>
-      <div class="flex flex-col items-center justify-center gap-8">
-        @if (!searching) {
-          @for(item of items; track item._id) {
-            <div class="card bg-neutral text-neutral-content w-96">
+      @if (!searching) {
+      <label class="input mb-4">
+        <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </g>
+        </svg>
+        <input type="search" required placeholder="Buscar" [value]="searchTerm()"
+          (input)="searchTerm.set($any($event.target).value)" />
+      </label>
+      <div class="flex flex-col xl:grid xl:grid-cols-3 justify-center gap-8">
+          @for(item of filteredItems(); track item._id) {
+            <div class="card bg-neutral text-neutral-content w-96 h-full flex flex-col justify-between mx-auto">
+              <div class="flex">
+                <span [class]="item.available ? 'badge badge-sm badge-success' : 'badge badge-sm badge-error'"><b>{{
+                    item.available ? 'Disponível' : 'Indisponível' }}</b></span>
+              </div>
               <div class="card-body items-center text-center">
                 <h2 class="card-title"><b>Item: </b>{{ item.name }}</h2>
                 <p><b>Descrição: </b>{{ item.description }}</p>
@@ -62,8 +76,8 @@ import { LoadingComponent } from "../../components/loading/loading.component";
               </div>
             </div>
           }
-        }
       </div>
+      }
     </div>
   `,
   imports: [LoadingComponent],
@@ -73,8 +87,20 @@ export class DashboardViewComponent {
   private readonly route = inject(Router);
   private readonly alertService = inject(AlertService);
   api = inject(ItemsApiService);
-  items: Item[] = [];
+  items = signal<Item[]>([])
   searching: boolean = false;
+  searchTerm = signal<string>('');
+  filteredItems = computed(() => {
+    const term = this.searchTerm().toLowerCase().trim();
+
+    if (!term) {
+      return this.items();
+    }
+
+    return this.items().filter(item =>
+      item.name.toLowerCase().includes(term)
+    );
+  });
 
   ngOnInit(): void {
     this.getItems();
@@ -84,7 +110,7 @@ export class DashboardViewComponent {
     this.searching = true;
     this.api.listItemsPerLoggedUser().pipe(finalize(() => this.searching = false)).subscribe({
       next: (resposta) => {
-        this.items = resposta;
+        this.items.set(resposta);
       },
       error: () =>
         this.alertService.showAlert('Erro ao buscar itens de usuário', 'error')
