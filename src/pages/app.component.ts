@@ -2,10 +2,11 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { AlertService } from '../services/alert-service';
 import { trigger, style, animate, transition } from '@angular/animations';
+import { NavbarComponent } from '../components/navbar/navbar.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, NavbarComponent],
   animations: [
     trigger('slideInOut', [
       transition(':enter', [
@@ -38,9 +39,7 @@ import { trigger, style, animate, transition } from '@angular/animations';
           <span>{{ alert.message }}</span>
         </div>
       }
-      <div class="navbar bg-neutral text-neutral-content bg-base-100 shadow-sm">
-        <p class="btn btn-ghost text-xl" (click)="navigateHome()">CondoShare</p>
-      </div>
+      <app-navbar-component/>
       <main class="py-8">
         <router-outlet />
       </main>
@@ -50,8 +49,4 @@ import { trigger, style, animate, transition } from '@angular/animations';
 export class AppComponent {
   protected readonly alertService = inject(AlertService);
   protected readonly route = inject(Router);
-
-  navigateHome(): void {
-    void this.route.navigate(['/']);
-  }
 }
