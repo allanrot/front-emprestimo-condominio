@@ -32,7 +32,7 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.css"
             ],
             "scripts": []
           },
@@ -68,6 +68,9 @@
             },
             "development": {
               "buildTarget": "emprestimo-condominio:build:development"
+            },
+            "options": {
+              "port": 5000
             }
           },
           "defaultConfiguration": "development"
@@ -91,12 +94,15 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.css"
             ],
             "scripts": []
           }
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
